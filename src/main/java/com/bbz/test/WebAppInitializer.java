@@ -20,6 +20,8 @@ public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServlet
         context.setConfigLocation(
                 "com.bbz.test.config;" +
                 "com.bbz.test.controller;" +
+                "com.bbz.test.validation;" +
+                "com.bbz.test.registration;" +
                 "com.bbz.test.dao;" +
                 "com.bbz.test.service;");
 

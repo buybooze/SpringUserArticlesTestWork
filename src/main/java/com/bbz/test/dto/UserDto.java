@@ -1,8 +1,8 @@
 package com.bbz.test.dto;
 
-import com.bbz.test.validation.PasswordMatches;
-import com.bbz.test.validation.PasswordStrong;
-import com.bbz.test.validation.ValidEmail;
+import com.bbz.test.validation.validator.PasswordMatches;
+import com.bbz.test.validation.validator.PasswordStrong;
+import com.bbz.test.validation.validator.ValidEmail;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;

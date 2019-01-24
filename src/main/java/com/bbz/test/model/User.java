@@ -1,5 +1,6 @@
 package com.bbz.test.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class User {
@@ -13,6 +14,8 @@ public class User {
     private String password;
 
     private List<String> roles;
+
+    private boolean enabled;
 
     public int getId() {
         return id;
@@ -54,6 +57,14 @@ public class User {
         this.roles = roles;
     }
 
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
     public User() {
     }
 
@@ -64,12 +75,13 @@ public class User {
         this.roles = roles;
     }
 
-    public User(int id, String name, String email, String password, List<String> roles) {
+    public User(int id, String name, String email, String password, List<String> roles, boolean enabled) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.roles = roles;
+        this.enabled = enabled;
     }
 
 
@@ -79,8 +91,9 @@ public class User {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
-                ", password='......" + '\'' +
+                ", password='" + "......." + '\'' +
                 ", roles=" + roles +
+                ", enabled=" + enabled +
                 '}';
     }
 }

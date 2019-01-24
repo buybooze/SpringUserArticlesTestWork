@@ -5,6 +5,7 @@ import com.bbz.test.model.Article;
 import com.bbz.test.dto.ArticleDto;
 import com.bbz.test.model.User;
 import com.bbz.test.dto.UserDto;
+import com.bbz.test.registration.OnRegistrationCompleteEvent;
 import com.bbz.test.service.ArticlesService;
 import com.bbz.test.service.UserService;
 import com.bbz.test.validation.exception.EmailExistsException;
@@ -12,6 +13,7 @@ import com.bbz.test.validation.exception.UserNameExistsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,6 +24,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 
@@ -56,6 +59,10 @@ public class MainController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    ApplicationEventPublisher eventPublisher;
+
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String index(Model model) {
@@ -148,27 +155,34 @@ public class MainController {
     }
 
     @RequestMapping(value = "/login/registration", method = RequestMethod.POST)
-    public String register(@ModelAttribute("userDto") @Valid UserDto userDto, BindingResult result) {
+    public ModelAndView register(@ModelAttribute("userDto") @Valid UserDto userDto, BindingResult result, WebRequest request) {
         logger.debug("register() POST");
         logger.debug(userDto.toString());
         if (result.hasErrors()) {
-            return "registration";
+            return new ModelAndView("registration", "userDto", userDto);
         }
-        BindingResult addingUserResult = createUserAccount(userDto, result);
-        if (addingUserResult.hasErrors()) {
-            return "registration";
+        User registeredUser = createUserAccount(userDto, result);
+        if (result.hasErrors()) {
+            return new ModelAndView("registration", "userDto", userDto);
         }
-        return "redirect:.";
+        try {
+            String appUrl = request.getContextPath();
+            eventPublisher.publishEvent(new OnRegistrationCompleteEvent(registeredUser, request.getLocale(), appUrl));
+        } catch (Exception e) {
+            return new ModelAndView("failRegistration", "userDto", userDto);
+        }
+        return new ModelAndView("successRegistration", "userDto", userDto);
     }
 
-    private BindingResult createUserAccount(UserDto userDto, BindingResult result) {
+    private User createUserAccount(UserDto userDto, BindingResult result) {
+        User user = null;
         try {
-            userService.registerNewUserAccount((new User(userDto.getName(),userDto.getEmail().toLowerCase(),passwordEncoder.encode(userDto.getPassword()), Arrays.asList("ROLE_EDITOR"))));
+            user = userService.registerNewUserAccount((new User(userDto.getName(),userDto.getEmail().toLowerCase(),passwordEncoder.encode(userDto.getPassword()), Arrays.asList("ROLE_EDITOR"))));
         } catch (UserNameExistsException e) {
-            result.addError(new FieldError("userDto","name",e.getMessage()));
+            result.addError(new FieldError("userDto","name","{email.alreadyExists}: "+e.getMessage()));
         } catch (EmailExistsException e) {
-            result.addError(new FieldError("userDto", "email", e.getMessage()));
+            result.addError(new FieldError("userDto", "email", "{nickname.alreadyExists}: "+e.getMessage()));
         }
-        return result;
+        return user;
     }
 }

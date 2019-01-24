@@ -1,4 +1,4 @@
-package com.bbz.test.validation;
+package com.bbz.test.validation.validator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-@Target({TYPE,FIELD,ANNOTATION_TYPE})
+@Target({TYPE,ANNOTATION_TYPE})
 @Retention(RUNTIME)
 @Constraint(validatedBy = PasswordMatchesValidator.class)
 @Documented

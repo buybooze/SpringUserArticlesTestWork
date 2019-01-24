@@ -1,6 +1,6 @@
 package com.bbz.test.dto;
 
-import com.bbz.test.validation.ValidTitle;
+import com.bbz.test.validation.validator.ValidTitle;
 
 import javax.validation.constraints.NotBlank;
 

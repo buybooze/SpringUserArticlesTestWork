@@ -2,6 +2,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -64,10 +65,12 @@
                     <div class="well">
                         <h4>Залогиньтесь, используя учетные данные, или создайте новую учетную запись</h4>
                     </div>
+
                     <form action="/login" method="post">
                         <c:if test="${param.error != null}">
                             <div class="alert alert-danger">
-                                Вы ввели неверные данные.
+                                <spring:message code="login.fail" text="default"/><br/>
+                                <c:out value="${SPRING_SECURITY_LAST_EXCEPTION}"/>
                             </div>
                         </c:if>
                         <c:if test="${param.logout != null}">

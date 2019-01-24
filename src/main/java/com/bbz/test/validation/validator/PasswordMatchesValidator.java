@@ -1,4 +1,4 @@
-package com.bbz.test.validation;
+package com.bbz.test.validation.validator;
 
 import com.bbz.test.dto.UserDto;
 

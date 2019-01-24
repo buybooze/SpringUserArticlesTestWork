@@ -25,20 +25,28 @@ public class MyUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String name)
             throws UsernameNotFoundException {
 
-        User user = userService.findUserByName(name);
-        if (user == null) {
-            throw new UsernameNotFoundException(
-                    "Не найдено пользователя с name: "+ name);
-        }
         boolean enabled = true;
         boolean accountNonExpired = true;
         boolean credentialsNonExpired = true;
         boolean accountNonLocked = true;
-        return  new org.springframework.security.core.userdetails.User
-                (user.getName(),
-                        user.getPassword(), enabled, accountNonExpired,
-                        credentialsNonExpired, accountNonLocked,
-                        getAuthorities(user.getRoles()));
+        try {
+            User user = userService.findUserByName(name);
+            if (user == null) {
+                throw new UsernameNotFoundException(
+                        "Не найдено пользователя с name: "+ name);
+            }
+
+            return  new org.springframework.security.core.userdetails.User
+                    (user.getName(),
+                            user.getPassword(),
+                            user.isEnabled(),
+                            accountNonExpired,
+                            credentialsNonExpired,
+                            accountNonLocked,
+                            getAuthorities(user.getRoles()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static List<GrantedAuthority> getAuthorities (List<String> roles) {

@@ -4,5 +4,5 @@
 
 --freddy - doctorwhothebest
 --admin - password
-INSERT INTO users(name, password, email, roles) VALUES ('freddy', '$2a$10$VTRvGRwpuouPYlifOFU00.qoAESKGqgpcchoJ353vkv59G7TIUSCG', 'buyboozee@gmail.com', 'ROLE_EDITOR');
+INSERT INTO users(name, password, email, roles, enabled) VALUES ('freddy', '$2a$10$VTRvGRwpuouPYlifOFU00.qoAESKGqgpcchoJ353vkv59G7TIUSCG', 'buyboozeeeeeeeeeeeee@gmail.com', 'ROLE_EDITOR', true);
 INSERT INTO users(name, password, email, roles) VALUES ('admin', '$2a$10$/65XVr5RZqq6fx4nUQRxpOmxgMhY21dYkikb2IxZCZ0hARJ9rG/di', 'admin@gmail.com', 'ROLE_EDITOR,ROLE_ADMIN');

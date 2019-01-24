@@ -6,12 +6,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.*;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -31,7 +32,8 @@ public class UsersDao {
                     rs.getString("name"),
                     rs.getString("email"),
                     rs.getString("password"),
-                    Arrays.asList(rs.getString("roles").split(",")));
+                    Arrays.asList(rs.getString("roles").split(",")),
+                    rs.getBoolean("enabled"));
 
     public List<User> findAll() {
         logger.debug("findAll()");
@@ -93,40 +95,63 @@ public class UsersDao {
         }
     }
 
-    public void insert(User user) {
+    public User insert(User user) {
         logger.debug("insert()");
-        List<User> users = new ArrayList<>();
-        users.add(user);
-        insertBatch(users);
-    }
-
-    public void insertBatch(final List<User> users) {
-        logger.debug("insertBatch()");
-        users.forEach(user -> logger.debug(user.toString()));
-        String sql = "INSERT INTO users(name, email, password, roles) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO users(name, email, password, roles, enabled) VALUES (?, ?, ?, ?, ?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
         try {
-            jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
-                @Override
-                public void setValues(PreparedStatement ps, int i) throws SQLException {
-                    User user = users.get(i);
+            jdbcTemplate.update(con ->  {
+                    PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
                     ps.setString(1, user.getName());
                     ps.setString(2, user.getEmail());
                     ps.setString(3, user.getPassword());
                     ps.setString(4, String.join(",", user.getRoles()));
-                }
-
-                @Override
-                public int getBatchSize() {
-                    return users.size();
-                }
-            });
+                    ps.setBoolean(5, user.isEnabled());
+                    return ps;
+                }, keyHolder);
         } catch (DuplicateKeyException e) {
             logger.debug("Tried violating UNIQUE CONSTRAINT " + e.getMessage());
+            return null;
         }
+        return findById(keyHolder.getKey().intValue());
+    }
+
+
+
+    public List<User> insertBatch(final List<User> users) {
+        logger.debug("insertBatch()");
+        List<User> userList = new ArrayList<>();
+        for(User user : users) {
+            userList.add(insert(user));
+        }
+        return userList;
     }
 
     public void delete(int id) {
         logger.debug("delete(" + id + ")");
         jdbcTemplate.update("DELETE FROM users WHERE id = ?", id);
     }
+
+    public User update(User user) {
+        logger.debug("update()");
+        String sql = "UPDATE users SET name=?, email=?, password=?, roles=?, enabled=? WHERE id=?";
+        try {
+            jdbcTemplate.update(con ->  {
+                PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
+                ps.setString(1, user.getName());
+                ps.setString(2, user.getEmail());
+                ps.setString(3, user.getPassword());
+                ps.setString(4, String.join(",", user.getRoles()));
+                ps.setBoolean(5, user.isEnabled());
+                ps.setInt(6,    user.getId());
+                return ps;
+            });
+        } catch (DuplicateKeyException e) {
+            logger.debug("Tried violating UNIQUE CONSTRAINT " + e.getMessage());
+            return null;
+        }
+        return findById(user.getId());
+    }
+
+    //TODO PreparedStatementSetter to PreparedStatementCreator
 }

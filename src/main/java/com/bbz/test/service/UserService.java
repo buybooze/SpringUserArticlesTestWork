@@ -1,7 +1,9 @@
 package com.bbz.test.service;
 
 import com.bbz.test.dao.UsersDao;
+import com.bbz.test.dao.VerificationTokenDao;
 import com.bbz.test.model.User;
+import com.bbz.test.model.VerificationToken;
 import com.bbz.test.validation.exception.EmailExistsException;
 import com.bbz.test.validation.exception.UserNameExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,14 +16,17 @@ public class UserService {
     @Autowired
     private UsersDao usersDao;
 
-    public void registerNewUserAccount(User user) throws EmailExistsException, UserNameExistsException {
+    @Autowired
+    private VerificationTokenDao verificationTokenDao;
+
+    public User registerNewUserAccount(User user) throws EmailExistsException, UserNameExistsException {
         if (emailExists(user.getEmail())) {
-            throw new EmailExistsException("Пользователь с email: " +  user.getEmail() + " уже существует");
+            throw new EmailExistsException(user.getEmail());
         }
         if (nameExists(user.getName())) {
-            throw new UserNameExistsException("Пользователь с именем: " +  user.getName() + " уже существует");
+            throw new UserNameExistsException(user.getName());
         }
-       usersDao.insert(user);
+       return usersDao.insert(user);
     }
 
     private boolean emailExists(String email) {
@@ -56,11 +61,29 @@ public class UserService {
         return usersDao.findByName(name);
     }
 
+    public User findUserByToken(String verificationToken) {
+        User user = verificationTokenDao.findByToken(verificationToken).getUser();
+        return user;
+    }
+
+    public VerificationToken getVerificationToken(String VerificationToken) {
+        return verificationTokenDao.findByToken(VerificationToken);
+    }
+
+    public VerificationToken createVerificationToken(User user, String token) {
+        VerificationToken myToken = new VerificationToken(token, user);
+        return verificationTokenDao.save(myToken);
+    }
+
     public List<User> findAllUsers() {
         return usersDao.findAll();
     }
 
     public void deleteUser(int id) {
         usersDao.delete(id);
+    }
+
+    public User update(User user) {
+        return usersDao.update(user);
     }
 }

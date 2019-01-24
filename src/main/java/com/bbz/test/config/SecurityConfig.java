@@ -1,6 +1,7 @@
 package com.bbz.test.config;
 
 import com.bbz.test.service.MyUserDetailsService;
+import com.bbz.test.validation.CustomAuthenticationFailureHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +20,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private MyUserDetailsService userDetailsService;
+
+    @Autowired
+    private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -49,7 +53,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/articles/editor").hasRole("EDITOR")
                 .antMatchers("/articles/delete/*").hasRole("EDITOR")
                 .and()
-                .formLogin().loginPage("/login").defaultSuccessUrl("/articles").permitAll()
+                .formLogin().loginPage("/login").failureHandler(customAuthenticationFailureHandler).defaultSuccessUrl("/articles").permitAll()
                 .and()
                 .logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout")).logoutSuccessUrl("/articles").permitAll();
                 //.logout().logoutUrl("/logout").logoutSuccessUrl("/articles").permitAll();
