@@ -65,6 +65,7 @@
                     <form:form method="POST" action="/login/registration" modelAttribute="userDto">
                         <h1>Регистрация пользователя.</h1>
                         <p>Все поля обязательны к заполнению.</p>
+                        <p class="text-warning"><b>Введите email, к которому у вас есть доступ. На него будет отправлено письмо с ссылкой для завершения регистрации</b></p>
                         <div class="input-group">
                             <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
                             <form:input type="text" class="form-control" path="name" placeholder="Логин"></form:input>

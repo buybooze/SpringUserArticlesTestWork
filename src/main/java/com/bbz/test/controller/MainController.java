@@ -169,9 +169,9 @@ public class MainController {
             String appUrl = request.getContextPath();
             eventPublisher.publishEvent(new OnRegistrationCompleteEvent(registeredUser, request.getLocale(), appUrl));
         } catch (Exception e) {
-            return new ModelAndView("failRegistration", "userDto", userDto);
+            return new ModelAndView("failRegistration", "user", registeredUser);
         }
-        return new ModelAndView("successRegistration", "userDto", userDto);
+        return new ModelAndView("successRegistration", "user", registeredUser);
     }
 
     private User createUserAccount(UserDto userDto, BindingResult result) {

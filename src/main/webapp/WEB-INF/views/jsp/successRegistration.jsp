@@ -29,7 +29,7 @@
             }
             }
         </style>
-        <title>Страница авторизации</title>
+        <title>Завершение авторизации</title>
     </head>
 
     <body>
@@ -62,53 +62,21 @@
         <div class="container-fluid text-center">
             <div class="row content">
                 <div class="col-sm-4 text-left">
+
                     <div class="well">
 
+                        <h4>На Ваш email ${user.getEmail()} было выслано письмо с ссылкой на страницу завершения регистрации</h4>
+
                         <c:choose>
-                            <c:when test="${param.regSuccess == true}">
-                                <h4>Вы успешно подтвердили свою учетную запись. Введите учетные данные, чтобы залогиниться</h4>
+                            <c:when test="${user.getUrlToEmail()!=''}">
+                                <a class="btn btn-primary" href="<c:out value='${user.getUrlToEmail()}'/>" target="_blank">Проверить почту</a>
                             </c:when>
                             <c:otherwise>
-                                <h4>Залогиньтесь, используя учетные данные, или создайте новую учетную запись</h4>
+                                <p>Проверьте ваш почтовый ящик</b>
                             </c:otherwise>
                         </c:choose>
 
                     </div>
-
-                    <form action="/login" method="post">
-                        <c:if test="${param.error != null}">
-                            <div class="alert alert-danger">
-                                <spring:message code="login.fail" text="default"/><br/>
-                                <c:out value="${SPRING_SECURITY_LAST_EXCEPTION}"/>
-                            </div>
-                        </c:if>
-                        <c:if test="${param.logout != null}">
-                            <div class="alert alert-danger">
-                                You have been logged out.
-                            </div>
-                        </c:if>
-                        <div class="input-group">
-                            <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-                            <input id="username" type="text" class="form-control" name="username"
-                                placeholder="логин" required="required"/>
-                        </div>
-                        <br/>
-                        <div class="input-group">
-                            <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-                            <input id="password" type="password" class="form-control" name="password"
-                                placeholder="пароль" required="required"/>
-                        </div>
-                        <input type="hidden"
-                            name="${_csrf.parameterName}"
-                            value="${_csrf.token}"/>
-                        </br>
-                        <button type="submit" class="btn btn-success">Войти</button>
-                    </form>
-                    <hr/>
-                    <form action="/login/registration">
-                        <button type="submit" class="btn btn-primary">Создать учетную запись</button>
-                    </form>
-                    <hr/>
                 </div>
             </div>
         </div>

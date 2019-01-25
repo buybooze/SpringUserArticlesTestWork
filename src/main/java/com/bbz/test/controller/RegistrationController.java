@@ -37,7 +37,7 @@ public class RegistrationController {
         if(verificationToken == null) {
             String message = messageSource.getMessage("auth.message.invalidToken", null, locale);
             model.addAttribute("message", message);
-            return "redirect:/badUser?lang=" + locale.getLanguage();
+            return "redirect:/badUser";
         }
 
         User user = verificationToken.getUser();
@@ -48,11 +48,12 @@ public class RegistrationController {
         if(verificationToken.getExpiryDate().getTime() - calendar.getTime().getTime() <= 0) {
             String message = messageSource.getMessage("auth.message.expiredToken", null, locale);
             model.addAttribute("message", message);
-            return "redirect:/badUser?lang=" + locale.getLanguage();
+            return "redirect:/badUser";
         }
 
         user.setEnabled(true);
         userService.update(user);
-        return "redirect:/login.html?lang=" + request.getLocale().getLanguage();
+        model.addAttribute("regSuccess", true);
+        return "redirect:/login";
     }
 }

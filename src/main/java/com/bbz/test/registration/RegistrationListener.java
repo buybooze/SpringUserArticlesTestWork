@@ -11,7 +11,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
-//import org.springframework.mail.javamail.JavaMailSender;
 
 import java.util.UUID;
 
@@ -43,13 +42,14 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
 
         String recepientAdddress = user.getEmail();
         String subject = "Registration Confirmation";
-        String confirmationUrl = event.getAppUrl() + "/registrationConfirm?token=" + token;
+        String confirmationUrl = "http://localhost:8080" + event.getAppUrl() + "/registrationConfirm?token=" + token;
         String message = messageSource.getMessage("message.regSucc", null, event.getLocale());
+        message += "\n"+confirmationUrl+"\n\n" + messageSource.getMessage("message.regSucc2", null, event.getLocale());
 
         SimpleMailMessage email = new SimpleMailMessage();
         email.setTo(recepientAdddress);
         email.setSubject(subject);
-        email.setText(message + " rn" + "http://localhost:8080" + confirmationUrl);
+        email.setText(message);
         mailSender.send(email);
     }
 }
