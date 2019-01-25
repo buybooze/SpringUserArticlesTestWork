@@ -17,14 +17,7 @@ public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServlet
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
         AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-        context.setConfigLocation(
-                "com.bbz.test.config;" +
-                "com.bbz.test.controller;" +
-                "com.bbz.test.validation;" +
-                "com.bbz.test.registration;" +
-                "com.bbz.test.dao;" +
-                "com.bbz.test.service;");
-
+        context.scan("com.bbz");
 
         servletContext.addListener(new ContextLoaderListener(context));
 
